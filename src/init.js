@@ -1,3 +1,5 @@
+// @ts-check
+
 import App from './app.js';
 
 export default () => {

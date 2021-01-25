@@ -10,8 +10,8 @@ const invalidRssUrl = '/invalid.rss';
 const wrongUrl = ':wrongurl.com';
 const nonExistentUrl = '/nonexisten.rss';
 
-const pathToValidRss = path.resolve(__dirname, '../__fixture__', validRssUrl);
-const pathToInvalidRss = path.resolve(__dirname, '../__fixture__', invalidRssUrl);
+const pathToValidRss = path.resolve(__dirname, '../__fixtures__/valid.rss');
+const pathToInvalidRss = path.resolve(__dirname, '../__fixtures__/invalid.rss');
 
 nock(host)
   .get(validRssUrl)
@@ -20,7 +20,7 @@ nock(host)
   })
   .get(invalidRssUrl)
   .replyWithFile(200, pathToInvalidRss, {
-    'Content-Type': 'application/rss+xml',
+    'Content-Type': 'application/html',
   })
   .get(nonExistentUrl)
   .reply(404);

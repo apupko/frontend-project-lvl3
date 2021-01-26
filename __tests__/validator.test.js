@@ -1,37 +1,53 @@
 import nock from 'nock';
 import path from 'path';
-import isValidRssUrl from '../src/validator.js';
+import axios from 'axios';
+import fs from 'fs';
+import { validateUrl, validateRssResponse, ERRORS } from '../src/validator.js';
+
+axios.defaults.adapter = require('axios/lib/adapters/http');
+
+const proxy = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}`;
 
 nock.disableNetConnect();
 
-const host = 'https://hexlet.ru';
-const validRssUrl = '/valid.rss';
-const invalidRssUrl = '/invalid.rss';
-const wrongUrl = ':wrongurl.com';
+const host = 'http://hexlet.ru';
+const validUrl = '/valid.rss';
+const invalidUrl = '/invalid.rss';
+const wrongUrl = ':-wrongurl.com';
 const nonExistentUrl = '/nonexisten.rss';
+const responses = {};
 
-const pathToValidRss = path.resolve(__dirname, '../__fixtures__/valid.rss');
-const pathToInvalidRss = path.resolve(__dirname, '../__fixtures__/invalid.rss');
-
-nock(host)
-  .get(validRssUrl)
-  .replyWithFile(200, pathToValidRss, {
-    'Content-Type': 'application/rss+xml',
-  })
-  .get(invalidRssUrl)
-  .replyWithFile(200, pathToInvalidRss, {
-    'Content-Type': 'application/html',
-  })
-  .get(nonExistentUrl)
-  .reply(404);
+beforeAll(() => {
+  const pathToValidRss = path.resolve(__dirname, '../__fixtures__/valid.json');
+  const pathToInvalidRss = path.resolve(__dirname, '../__fixtures__/invalid.json');
+  responses.valid = JSON.parse(fs.readFileSync(pathToValidRss, 'utf-8'));
+  responses.invalid = JSON.parse(fs.readFileSync(pathToInvalidRss, 'utf-8'));
+});
 
 const urls = [
-  ['valid url', `${host}${validRssUrl}`, true],
-  ['invalid url', `${host}${invalidRssUrl}`, false],
-  ['non existen url', `${host}${nonExistentUrl}`, false],
-  ['wrong url', wrongUrl, false],
+  ['valid url', `${host}${validUrl}`, [], `${host}${validUrl}`],
+  ['invalid url', `${wrongUrl}`, [], ERRORS.invalidUrl],
+  ['url in feeds list', `${host}${validUrl}`, [`${host}${validUrl}`], ERRORS.rssAlreadyExists],
 ];
 
-test.each(urls)('case %#: %s', (caseName, url, expected) => {
-  expect(isValidRssUrl(url)).toBe(expected);
+test.each(urls)('case %#: %s', (caseName, url, list, expected) => validateUrl(url, list)
+  .then((result) => expect(result).toBe(expected))
+  .catch((err) => expect(err.errors).toContain(expected)));
+
+test('valid response', () => {
+  nock(host)
+    .get(validUrl)
+    .reply(200, responses.valid);
+  return axios.get(`${host}${validUrl}`)
+    .then((response) => validateRssResponse(response))
+    .then((response) => expect(response.data).toEqual(responses.valid));
+});
+
+test('invalid rss in response', () => {
+  nock(host)
+    .get(validUrl)
+    .reply(200, responses.invalid);
+  return axios.get(`${host}${validUrl}`)
+    .then((response) => validateRssResponse(response))
+    .catch((err) => expect(err.errors).toContain(ERRORS.wrongRss));
 });

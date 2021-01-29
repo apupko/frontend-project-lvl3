@@ -1,10 +1,20 @@
-export default class Example {
-  constructor(element) {
-    this.element = element;
-  }
+import view from './view.js';
+import rssParser from './parser.js';
 
-  init() {
-    this.element.textContent = 'hello, world!';
-    console.log('ehu!');
-  }
-}
+export default () => {
+  const state = {
+    feedForm: {
+      state: 'filing',
+      fields: {
+        url: '',
+      },
+      errors: [],
+    },
+    feeds: [],
+    posts: [],
+  };
+
+  view.init();
+  state.feedForm.state = 'failed';
+  view.renderForm(state);
+};

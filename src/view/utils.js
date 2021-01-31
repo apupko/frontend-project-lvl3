@@ -4,15 +4,9 @@ const createHeader = (text) => {
   return header;
 };
 
-const createItem = (data) => {
-  const title = document.createElement('h3');
-  const description = document.createElement('p');
+const createItem = () => {
   const item = document.createElement('li');
-
-  title.textContent = data.title;
-  description.textContent = data.description;
   item.classList.add('list-group-item');
-  item.append(title, description);
 
   return item;
 };

@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import { createHeader, createItem, createList } from './utils.js';
 
 const postClass = [
@@ -21,7 +22,7 @@ export default (view) => ({ posts }) => {
   const { posts: postsDiv } = view;
   postsDiv.innerHTML = '';
   if (posts.length === 0) return;
-  const header = createHeader('Posts');
+  const header = createHeader(i18next.t('posts.header'));
   const items = posts.map(createPostItem);
   const list = createList(items);
   postsDiv.append(header, list);

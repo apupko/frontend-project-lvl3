@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import { createHeader, createItem, createList } from './utils.js';
 
 const createFeedItem = (feed) => {
@@ -15,7 +16,7 @@ export default (view) => ({ feeds }) => {
   feedsDiv.innerHTML = '';
   if (feeds.length === 0) return;
 
-  const header = createHeader('Feeds');
+  const header = createHeader(i18next.t('feeds.header'));
   const items = feeds.map(createFeedItem);
   const list = createList(items);
   feedsDiv.append(header, list);

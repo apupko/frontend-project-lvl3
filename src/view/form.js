@@ -1,8 +1,9 @@
 const removeInvalid = (element) => element.classList.remove('is-invalid');
 const setInvalid = (element) => element.classList.add('is-invalid');
 
-const enableElement = (element) => element.setAttribute('disabled', false);
-const disableElement = (element) => element.setAttribute('disabled', true);
+const enableElement = (element) => element.removeAttribute('disabled');
+
+const disableElement = (element) => element.setAttribute('disabled', '');
 
 const renderFeedback = (view, message, options = { error: false }) => {
   const { feedback } = view;

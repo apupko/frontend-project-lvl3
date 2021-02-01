@@ -5,17 +5,6 @@ const enableElement = (element) => element.removeAttribute('disabled');
 
 const disableElement = (element) => element.setAttribute('disabled', '');
 
-const renderFeedback = (view, message, options = { error: false }) => {
-  const { feedback } = view;
-  feedback.textContent = message;
-  const { error } = options;
-  if (error) {
-    feedback.classList.add('text-danger');
-    return;
-  }
-  feedback.classList.remove('text-danger');
-};
-
 const renderFormToFilling = (view) => {
   const { form } = view;
   const { url, submitBtn } = form.elements;
@@ -32,14 +21,12 @@ const renderFormToSending = (view) => {
   disableElement(url);
 };
 
-const renderFormToFailed = (view, errors) => {
+const renderFormToFailed = (view) => {
   const { form } = view;
   const { url, submitBtn } = form.elements;
   setInvalid(url);
   enableElement(submitBtn);
   enableElement(url);
-  const msg = errors.join(' ');
-  renderFeedback(view, msg, { error: true });
 };
 
 const renderFormToLoaded = (view) => {
@@ -49,8 +36,6 @@ const renderFormToLoaded = (view) => {
   url.textContent = '';
   enableElement(submitBtn);
   enableElement(url);
-  const msg = 'Loaded';
-  renderFeedback(view, msg);
 };
 
 const mappingFormStateToRender = {
@@ -61,8 +46,8 @@ const mappingFormStateToRender = {
 };
 
 export default (view) => ({ feedForm }) => {
-  const { state, errors } = feedForm;
+  const { state } = feedForm;
   const render = mappingFormStateToRender[state];
   if (!render) throw Error('Unknown form state!!!');
-  render(view, errors);
+  render(view);
 };

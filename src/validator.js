@@ -28,7 +28,7 @@ const rssStatusShema = object({
     .matches(/(rss\+xml|xml)/, { message: ERRORS.wrongContentType }),
 }).required();
 
-export const validateRssResponse = (response) => {
+export const validateResponse = (response) => {
   const schema = object().shape({
     status: number().required().equals(validStatusCodes),
     data: object({

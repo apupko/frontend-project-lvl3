@@ -2,19 +2,15 @@ import nock from 'nock';
 import path from 'path';
 import axios from 'axios';
 import fs from 'fs';
-import { validateUrl, validateRssResponse, ERRORS } from '../src/validator.js';
+import { validateUrl, validateResponse, ERRORS } from '../src/validator.js';
 
 axios.defaults.adapter = require('axios/lib/adapters/http');
-
-const proxy = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}`;
 
 nock.disableNetConnect();
 
 const host = 'http://hexlet.ru';
 const validUrl = '/valid.rss';
-const invalidUrl = '/invalid.rss';
 const wrongUrl = ':-wrongurl.com';
-const nonExistentUrl = '/nonexisten.rss';
 const responses = {};
 
 beforeAll(() => {
@@ -39,7 +35,7 @@ test('valid response', () => {
     .get(validUrl)
     .reply(200, responses.valid);
   return axios.get(`${host}${validUrl}`)
-    .then((response) => validateRssResponse(response))
+    .then((response) => validateResponse(response))
     .then((response) => expect(response.data).toEqual(responses.valid));
 });
 
@@ -48,6 +44,6 @@ test('invalid rss in response', () => {
     .get(validUrl)
     .reply(200, responses.invalid);
   return axios.get(`${host}${validUrl}`)
-    .then((response) => validateRssResponse(response))
+    .then((response) => validateResponse(response))
     .catch((err) => expect(err.errors).toContain(ERRORS.wrongRss));
 });

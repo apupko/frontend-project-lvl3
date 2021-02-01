@@ -4,6 +4,8 @@ import View from './view/view.js';
 import { validateUrl, validateResponse } from './validator.js';
 import RSSParser from './parser.js';
 
+const proxy = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}`;
+
 export default () => {
   const initState = {
     feedForm: {
@@ -11,7 +13,10 @@ export default () => {
       fields: {
         url: '',
       },
-      errors: [],
+    },
+    feedback: {
+      message: '',
+      isError: false,
     },
     feeds: [],
     posts: [],
@@ -19,6 +24,7 @@ export default () => {
 
   const view = new View();
   const state = view.init(initState);
+  state.feedback = { message: '', isError: false };
 
   const { form } = view;
 
@@ -26,22 +32,29 @@ export default () => {
     event.preventDefault();
     const { value } = event.target.elements.url;
     const feedsUrls = state.feeds.map((feed) => _.get(feed, 'link'));
+    console.log(feedsUrls);
     validateUrl(value, feedsUrls)
       .then((validUrl) => {
         state.feedForm.state = 'sending';
-        return axios.get(validUrl);
+        return axios.get(proxy(validUrl));
       })
       .then((response) => validateResponse(response))
-      .then(({ data }) => RSSParser.parse(data.contents))
-      .then(({ feeds, posts }) => {
+      .then(({ data }) => {
+        const { url } = data.status;
+        const { contents } = data;
+        return RSSParser.parse(contents, url, _.uniqueId);
+      })
+      .then(({ feed, posts }) => {
         state.feedForm.state = 'finished';
-        state.feeds = [...feeds];
-        state.posts = [...posts];
+        state.feeds = [...state.feeds, feed];
+        state.posts = [...state.posts, ...posts];
+        state.feedback = { message: 'Ok', isError: false };
         state.feedForm.state = 'filling';
       })
       .catch((err) => {
         state.feedForm.state = 'failed';
-        state.errors = [...err.errors];
+        const { message } = err;
+        state.feedback = { message, isError: true };
       });
   };
 

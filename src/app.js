@@ -32,7 +32,6 @@ export default () => {
     event.preventDefault();
     const { value } = event.target.elements.url;
     const feedsUrls = state.feeds.map((feed) => _.get(feed, 'link'));
-    console.log(feedsUrls);
     validateUrl(value, feedsUrls)
       .then((validUrl) => {
         state.feedForm.state = 'sending';

@@ -32,7 +32,7 @@ const renderFormToLoaded = (view) => {
   const { form } = view;
   const { url, submitBtn } = form.elements;
   removeInvalid(url);
-  url.textContent = '';
+  url.value = '';
   enableElement(submitBtn);
   enableElement(url);
 };

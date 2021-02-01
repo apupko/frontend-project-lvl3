@@ -10,6 +10,7 @@ const createPostItem = (post) => {
   const item = createItem();
   const link = document.createElement('a');
   link.setAttribute('href', post.link);
+  link.setAttribute('target', '_blank');
   link.textContent = post.title;
   item.append(link);
   item.classList.add(...postClass);

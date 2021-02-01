@@ -12,10 +12,9 @@ const createFeedItem = (feed) => {
 
 export default (view) => ({ feeds }) => {
   const { feeds: feedsDiv } = view;
-  if (feeds.length === 0) {
-    feedsDiv.innerHTML = '';
-    return;
-  }
+  feedsDiv.innerHTML = '';
+  if (feeds.length === 0) return;
+
   const header = createHeader('Feeds');
   const items = feeds.map(createFeedItem);
   const list = createList(items);

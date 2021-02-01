@@ -18,10 +18,8 @@ const createPostItem = (post) => {
 
 export default (view) => ({ posts }) => {
   const { posts: postsDiv } = view;
-  if (posts.length === 0) {
-    postsDiv.innerHTML = '';
-    return;
-  }
+  postsDiv.innerHTML = '';
+  if (posts.length === 0) return;
   const header = createHeader('Posts');
   const items = posts.map(createPostItem);
   const list = createList(items);

@@ -2,18 +2,18 @@ import onChange from 'on-change';
 import renderForm from './form';
 import renderFeeds from './feeds';
 import renderPosts from './posts';
+import renderFeedback from './feedback';
 
-const watchingFunction = (view) => function (path) {
-  console.log(`path - ${path}`);
+const watchingFunction = (view) => function func(path) {
   const mappingPathToRender = {
     'feedForm.state': renderForm(view),
-    errors: renderForm(view),
+    feedback: renderFeedback(view),
     feeds: renderFeeds(view),
     posts: renderPosts(view),
   };
   const render = mappingPathToRender[path];
   if (!render) {
-    throw new Error('Unknown app state!!!');
+    throw new Error('Unknown render path!!!');
   }
   render(this);
 };

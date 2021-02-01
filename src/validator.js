@@ -2,30 +2,23 @@ import { object, number, string } from 'yup';
 
 const validStatusCodes = [200];
 
-export const ERRORS = {
-  invalidUrl: 'Must be valid url',
-  rssAlreadyExists: 'Rss already exists',
-  wrongRss: 'This source doesn\'t contain valid rss',
-  wrongContentType: 'This source doesn\'t contain valid rss',
-  notFound: 'This source doesn\'t contain valid rss',
-};
-
 export const validateUrl = (url, urlsList) => {
   const schema = string()
     .required()
-    .url(ERRORS.invalidUrl)
-    .notOneOf(urlsList, ERRORS.rssAlreadyExists);
+    .url('feedback.errors.url.invalid')
+    .notOneOf(urlsList, 'feedback.errors.rss.alreadyExists');
   return schema.validate(url);
 };
 
 const rssContentShema = string()
   .required()
-  .matches(/<rss.+?version=".+?".*?>/gm, { message: ERRORS.wrongRss });
+  .matches(/<rss.+?version=".+?".*?>/gm, { message: 'feedback.errors.rss.invalid' });
 
 const rssStatusShema = object({
-  http_code: number().equals(validStatusCodes, ERRORS.notFound),
-  content_type: string().required()
-    .matches(/(rss\+xml|xml)/, { message: ERRORS.wrongContentType }),
+  http_code: number().equals(validStatusCodes, 'feedback.errors.rss.notFound'),
+  content_type: string()
+    .required()
+    .matches(/(rss\+xml|xml)/, { message: 'feedback.errors.rss.invalid' }),
 }).required();
 
 export const validateResponse = (response) => {

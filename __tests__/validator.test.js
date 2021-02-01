@@ -2,7 +2,7 @@ import nock from 'nock';
 import path from 'path';
 import axios from 'axios';
 import fs from 'fs';
-import { validateUrl, validateResponse, ERRORS } from '../src/validator.js';
+import { validateUrl, validateResponse } from '../src/validator.js';
 
 axios.defaults.adapter = require('axios/lib/adapters/http');
 
@@ -22,8 +22,8 @@ beforeAll(() => {
 
 const urls = [
   ['valid url', `${host}${validUrl}`, [], `${host}${validUrl}`],
-  ['invalid url', `${wrongUrl}`, [], ERRORS.invalidUrl],
-  ['url in feeds list', `${host}${validUrl}`, [`${host}${validUrl}`], ERRORS.rssAlreadyExists],
+  ['invalid url', `${wrongUrl}`, [], 'feedback.errors.url.invalid'],
+  ['url in feeds list', `${host}${validUrl}`, [`${host}${validUrl}`], 'feedback.errors.rss.alreadyExists'],
 ];
 
 test.each(urls)('case %#: %s', (caseName, url, list, expected) => validateUrl(url, list)
@@ -45,5 +45,5 @@ test('invalid rss in response', () => {
     .reply(200, responses.invalid);
   return axios.get(`${host}${validUrl}`)
     .then((response) => validateResponse(response))
-    .catch((err) => expect(err.errors).toContain(ERRORS.wrongRss));
+    .catch((err) => expect(err.errors).toContain('feedback.errors.rss.invalid'));
 });

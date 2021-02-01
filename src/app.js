@@ -48,12 +48,14 @@ export default () => {
         state.feedForm.state = 'finished';
         state.feeds = [...state.feeds, feed];
         state.posts = [...state.posts, ...posts];
-        state.feedback = { message: 'Ok', isError: false };
+        state.feedback = { message: 'feedback.rssLoaded', isError: false };
         state.feedForm.state = 'filling';
       })
       .catch((err) => {
         state.feedForm.state = 'failed';
-        const { message } = err;
+        const { message } = err.message === 'Network error'
+          ? { message: 'feedback.errors.network' }
+          : err;
         state.feedback = { message, isError: true };
       });
   };

@@ -30,19 +30,15 @@ export default () => {
 
   const formSubmitHahdler = (event) => {
     event.preventDefault();
-    const { value } = event.target.elements.url;
+    const { value: url } = event.target.elements.url;
     const feedsUrls = state.feeds.map((feed) => _.get(feed, 'link'));
-    validateUrl(value, feedsUrls)
+    validateUrl(url, feedsUrls)
       .then((validUrl) => {
         state.feedForm.state = 'sending';
         return axios.get(proxy(validUrl));
       })
       .then((response) => validateResponse(response))
-      .then(({ data }) => {
-        const { url } = data.status;
-        const { contents } = data;
-        return RSSParser.parse(contents, url, _.uniqueId);
-      })
+      .then(({ data }) => RSSParser.parse(data.contents, url, _.uniqueId))
       .then(({ feed, posts }) => {
         state.feedForm.state = 'finished';
         state.feeds = [...state.feeds, feed];

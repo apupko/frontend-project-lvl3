@@ -33,5 +33,5 @@ const rssDataFile = [
 
 test.each(rssDataFile)('parse %s rss', (caseName, file, expectedResult) => (
   readFixtureFile(file)
-    .then((data) => rss.parse(data, () => 1))
+    .then((data) => rss.parse(data, '#', () => 1))
     .then((obj) => expect(obj).toEqual(expectedResult))));

@@ -13,24 +13,23 @@ const parseItem = (item, feedId, generateId) => {
   };
 };
 
-const parseFeed = (channel, generateId) => {
+const parseFeed = (channel, url, generateId) => {
   const title = channel.querySelector('title').textContent;
   const description = channel.querySelector('description').textContent;
-  const link = channel.querySelector('link').textContent;
   return {
     title,
     description,
-    link,
+    link: url,
     id: generateId(),
   };
 };
 
-const parse = (data, generateId) => {
+const parse = (data, url, generateId) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(data, 'application/xml');
   const channel = doc.querySelector('channel');
   if (!channel) return {};
-  const feed = parseFeed(channel, generateId);
+  const feed = parseFeed(channel, url, generateId);
   const posts = map(channel.getElementsByTagName('item'),
     (item) => parseItem(item, feed.id, generateId));
   return { feed, posts };

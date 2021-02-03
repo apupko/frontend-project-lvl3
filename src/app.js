@@ -1,8 +1,9 @@
+import _ from 'lodash';
 import View from './view/view.js';
 import { validateUrl } from './validator.js';
 import { getFeed, getNewPostsFromFeeds } from './feeds.js';
 
-const UPDATE_TIME = 30000;
+const UPDATE_TIME = 5000;
 
 export default () => {
   const initState = {
@@ -12,6 +13,11 @@ export default () => {
     feedback: {
       message: '',
       isError: false,
+    },
+    stateUI: {
+      modal: {
+        id: 0,
+      },
     },
     feeds: [],
     posts: [],
@@ -40,8 +46,18 @@ export default () => {
       });
   };
 
-  const { form } = view;
+  const modalShowHandler = (event) => {
+    const { target } = event;
+    const { id } = target.dataset;
+    if (!id) return;
+    state.stateUI.modal.id = id;
+    const index = _(state.posts).findIndex({ id });
+    state.posts[index].read = true;
+  };
+
+  const { form, posts } = view;
   form.addEventListener('submit', formSubmitHahdler);
+  posts.addEventListener('click', modalShowHandler);
 
   const updateFeeds = (st, timeout) => () => {
     getNewPostsFromFeeds(state)

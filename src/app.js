@@ -2,7 +2,7 @@ import View from './view/view.js';
 import { validateUrl } from './validator.js';
 import { getFeed, getNewPostsFromFeeds } from './feeds.js';
 
-const UPDATE_TIME = 5000;
+const UPDATE_TIME = 30000;
 
 export default () => {
   const initState = {
@@ -48,12 +48,12 @@ export default () => {
       .then((newPostsArrays) => {
         const newPosts = newPostsArrays.flat();
         st.posts.unshift(...newPosts);
-        setTimeout(updateFeeds(st), timeout);
+        setTimeout(updateFeeds(st, timeout), timeout);
       })
       .catch((err) => {
-        setTimeout(updateFeeds(st), timeout);
+        setTimeout(updateFeeds(st, timeout), timeout);
         throw new Error(err);
       });
   };
-  setTimeout(updateFeeds(state), UPDATE_TIME);
+  setTimeout(updateFeeds(state, UPDATE_TIME), UPDATE_TIME);
 };

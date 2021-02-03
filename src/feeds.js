@@ -7,8 +7,8 @@ const proxyUrl = 'https://hexlet-allorigins.herokuapp.com/get?url=';
 const proxy = (url) => `${proxyUrl}${encodeURIComponent(url)}`;
 
 export const loadRss = (url) => axios
-  .get(proxy(url))
-  .catch(() => Promise.reject(new Error('feedback.errors.network')));
+  .get(proxy(url));
+  // .catch(() => Promise.reject(new Error('feedback.errors.network')));
 
 const setLinkToFeed = ({ feed, posts }, link) => ({ feed: { ...feed, link }, posts });
 const indexingFeed = ({ feed, posts }) => ({ feed: { ...feed, id: _.uniqueId() }, posts });

@@ -7,6 +7,8 @@ import {
   getNewPostsFromFeeds,
 } from './form.js';
 
+const UPDATE_INTREVAL = 5000;
+
 export default () => {
   const initState = {
     feedForm: {
@@ -52,12 +54,12 @@ export default () => {
       .then((newPostsArrays) => {
         const newPosts = _.flatten(newPostsArrays);
         st.posts.unshift(...newPosts);
-        setTimeout(update(st), 5000);
+        setTimeout(update(st), UPDATE_INTREVAL);
       })
       .catch((err) => {
-        setTimeout(update(st), 5000);
+        setTimeout(update(st), UPDATE_INTREVAL);
         throw new Error(err);
       });
   };
-  setTimeout(update(state), 5000);
+  setTimeout(update(state), UPDATE_INTREVAL);
 };

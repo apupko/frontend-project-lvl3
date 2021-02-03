@@ -1,13 +1,8 @@
-import _ from 'lodash';
 import View from './view/view.js';
-import {
-  getFeed,
-  validateForm,
-  indexing,
-  getNewPostsFromFeeds,
-} from './form.js';
+import { validateUrl } from './validator.js';
+import { getFeed, getNewPostsFromFeeds } from './feeds.js';
 
-const UPDATE_INTREVAL = 5000;
+const UPDATE_TIME = 5000;
 
 export default () => {
   const initState = {
@@ -29,16 +24,15 @@ export default () => {
   const formSubmitHahdler = (event) => {
     event.preventDefault();
     const url = event.target.elements.url.value;
-    const feedsUrls = _.map(state.feeds, (feed) => _.get(feed, 'link'));
+    const feedsUrls = state.feeds.map(({ link }) => link);
     state.feedForm.state = 'sending';
-    validateForm(url, feedsUrls).then(getFeed).then(indexing)
-      .then(({ feed, posts }) => {
-        state.feedForm.state = 'finished';
-        state.feeds = [...state.feeds, feed];
-        state.posts = [...posts, ...state.posts];
-        state.feedback = { message: 'feedback.rssLoaded', isError: false };
-        state.feedForm.state = 'filling';
-      })
+    validateUrl(url, feedsUrls).then(getFeed).then(({ feed, posts }) => {
+      state.feedForm.state = 'finished';
+      state.feeds = [...state.feeds, feed];
+      state.posts = [...posts, ...state.posts];
+      state.feedback = { message: 'feedback.rssLoaded', isError: false };
+      state.feedForm.state = 'filling';
+    })
       .catch((error) => {
         const { message } = error;
         state.feedForm.state = 'failed';
@@ -49,17 +43,17 @@ export default () => {
   const { form } = view;
   form.addEventListener('submit', formSubmitHahdler);
 
-  const update = (st) => () => {
+  const updateFeeds = (st, timeout) => () => {
     getNewPostsFromFeeds(state)
       .then((newPostsArrays) => {
-        const newPosts = _.flatten(newPostsArrays);
+        const newPosts = newPostsArrays.flat();
         st.posts.unshift(...newPosts);
-        setTimeout(update(st), UPDATE_INTREVAL);
+        setTimeout(updateFeeds(st), timeout);
       })
       .catch((err) => {
-        setTimeout(update(st), UPDATE_INTREVAL);
+        setTimeout(updateFeeds(st), timeout);
         throw new Error(err);
       });
   };
-  setTimeout(update(state), UPDATE_INTREVAL);
+  setTimeout(updateFeeds(state), UPDATE_TIME);
 };

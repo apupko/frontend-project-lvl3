@@ -12,6 +12,8 @@ const createPostItem = (post) => {
   const link = document.createElement('a');
   link.setAttribute('href', post.link);
   link.setAttribute('target', '_blank');
+  link.setAttribute('rel', 'noopener noreferrer');
+  link.classList.add('font-weight-bold');
   link.textContent = post.title;
   item.append(link);
   item.classList.add(...postClass);

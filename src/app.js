@@ -1,18 +1,18 @@
-import axios from 'axios';
 import _ from 'lodash';
 import View from './view/view.js';
-import { validateUrl, validateResponse } from './validator.js';
-import RSSParser from './parser.js';
+import {
+  getFeed,
+  validateForm,
+  indexing,
+  getNewPostsFromFeeds,
+} from './form.js';
 
-const proxy = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}`;
+const UPDATE_INTREVAL = 5000;
 
 export default () => {
   const initState = {
     feedForm: {
       state: 'filling',
-      fields: {
-        url: '',
-      },
     },
     feedback: {
       message: '',
@@ -26,38 +26,40 @@ export default () => {
   const state = view.init(initState);
   state.feedback = { message: '', isError: false };
 
-  const { form } = view;
-
   const formSubmitHahdler = (event) => {
     event.preventDefault();
-    const { value } = event.target.elements.url;
-    const feedsUrls = state.feeds.map((feed) => _.get(feed, 'link'));
-    validateUrl(value, feedsUrls)
-      .then((validUrl) => {
-        state.feedForm.state = 'sending';
-        return axios.get(proxy(validUrl));
-      })
-      .then((response) => validateResponse(response))
-      .then(({ data }) => {
-        const { url } = data.status;
-        const { contents } = data;
-        return RSSParser.parse(contents, url, _.uniqueId);
-      })
+    const url = event.target.elements.url.value;
+    const feedsUrls = _.map(state.feeds, (feed) => _.get(feed, 'link'));
+    state.feedForm.state = 'sending';
+    validateForm(url, feedsUrls).then(getFeed).then(indexing)
       .then(({ feed, posts }) => {
         state.feedForm.state = 'finished';
         state.feeds = [...state.feeds, feed];
-        state.posts = [...state.posts, ...posts];
+        state.posts = [...posts, ...state.posts];
         state.feedback = { message: 'feedback.rssLoaded', isError: false };
         state.feedForm.state = 'filling';
       })
-      .catch((err) => {
+      .catch((error) => {
+        const { message } = error;
         state.feedForm.state = 'failed';
-        const { message } = err.message === 'Network error'
-          ? { message: 'feedback.errors.network' }
-          : err;
         state.feedback = { message, isError: true };
       });
   };
 
+  const { form } = view;
   form.addEventListener('submit', formSubmitHahdler);
+
+  const update = (st) => () => {
+    getNewPostsFromFeeds(state)
+      .then((newPostsArrays) => {
+        const newPosts = _.flatten(newPostsArrays);
+        st.posts.unshift(...newPosts);
+        setTimeout(update(st), UPDATE_INTREVAL);
+      })
+      .catch((err) => {
+        setTimeout(update(st), UPDATE_INTREVAL);
+        throw new Error(err);
+      });
+  };
+  setTimeout(update(state), UPDATE_INTREVAL);
 };

@@ -1,7 +1,7 @@
 export default {
   translation: {
     mainPage: {
-      title: 'RSS aggregator',
+      title: 'RSS reader',
       description: 'Start reading RSS today! It is easy, it is nicely.',
       example: 'Example: https://ru.hexlet.io/lessons.rss',
     },
@@ -14,6 +14,13 @@ export default {
     },
     posts: {
       header: 'Posts',
+      preview: {
+        previewBtnName: 'Preview',
+        modal: {
+          closeName: 'Close',
+          fullArtName: 'Full article',
+        },
+      },
     },
     feedback: {
       rssLoaded: 'Rss has been loaded',

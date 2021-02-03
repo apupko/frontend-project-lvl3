@@ -12,7 +12,12 @@ export const loadRss = (url) => axios
 
 const setLinkToFeed = ({ feed, posts }, link) => ({ feed: { ...feed, link }, posts });
 const indexingFeed = ({ feed, posts }) => ({ feed: { ...feed, id: _.uniqueId() }, posts });
-const indexingPost = (post, feedId) => ({ ...post, feedId, id: _.uniqueId() });
+const indexingPost = (post, feedId) => ({
+  ...post,
+  feedId,
+  id: _.uniqueId(),
+  read: false,
+});
 const indexingPosts = ({ feed, posts }) => (
   { feed, posts: posts.map((post) => indexingPost(post, feed.id)) });
 

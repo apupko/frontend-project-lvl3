@@ -1,6 +1,4 @@
 import _ from 'lodash';
-import 'bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import View from './view/view.js';
 import { validateUrl } from './validator.js';
 import { getFeed, getNewPostsFromFeeds } from './feeds.js';

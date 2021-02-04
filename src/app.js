@@ -25,7 +25,6 @@ export default () => {
 
   const view = new View();
   const state = view.init(initState);
-  state.feedback = { message: '', isError: false };
 
   const formSubmitHahdler = (event) => {
     event.preventDefault();

@@ -6,9 +6,11 @@ const render = (view, feedback) => {
   label.textContent = i18next.t(message);
   if (isError) {
     label.classList.add('text-danger');
+    label.classList.remove('text-success');
     return;
   }
   label.classList.remove('text-danger');
+  label.classList.add('text-success');
 };
 
 export default (view) => ({ feedback }) => {

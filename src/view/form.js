@@ -1,6 +1,5 @@
 const renderFormToFilling = ({ elements }) => {
   const { url, submitBtn } = elements;
-  url.classList.remove('is-invalid');
   submitBtn.removeAttribute('disabled');
   url.removeAttribute('readonly');
 };
@@ -16,7 +15,6 @@ const renderFormToFailed = ({ elements }) => {
   const { url, submitBtn } = elements;
   url.classList.add('is-invalid');
   submitBtn.removeAttribute('disabled');
-  url.removeAttribute('readonly');
 };
 
 const renderFormToFinished = ({ elements }) => {

@@ -17,6 +17,7 @@ const rssContentShema = string()
 const rssStatusShema = object({
   http_code: number().equals(validStatusCodes, 'feedback.errors.rss.notFound'),
   content_type: string()
+    .required()
     .matches(/(rss\+xml|xml)/, { message: 'feedback.errors.rss.invalid' }),
 }).required();
 

@@ -3,6 +3,8 @@ import _ from 'lodash';
 import { validateResponse } from './validator.js';
 import RSSParser from './parser.js';
 
+axios.defaults.adapter = require('axios/lib/adapters/http');
+
 const proxyUrl = 'https://hexlet-allorigins.herokuapp.com/get?url=';
 const proxy = (url) => `${proxyUrl}${encodeURIComponent(url)}`;
 

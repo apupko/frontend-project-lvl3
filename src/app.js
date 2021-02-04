@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import View from './view/view.js';
-import { validateUrl } from './validator.js';
+import { getUrlValidationSchema } from './validator.js';
 import { getFeed, getNewPostsFromFeeds } from './feeds.js';
 
 const UPDATE_TIME = 5000;
@@ -30,7 +30,9 @@ export default () => {
     event.preventDefault();
     const url = event.target.elements.url.value;
     const feedsUrls = state.feeds.map(({ link }) => link);
-    if (validateUrl(url, feedsUrls)) {
+    const urlSchema = getUrlValidationSchema(feedsUrls);
+
+    if (urlSchema.isValidSync(url)) {
       state.feedForm.state = 'sending';
       getFeed(url).then(({ feed, posts }) => {
         state.feedForm.state = 'finished';
@@ -45,8 +47,13 @@ export default () => {
           state.feedForm.state = 'failed';
         });
     } else {
-      state.feedback = { message: 'feedback.errors.url.invalid', isError: true };
-      state.feedForm.state = 'failed';
+      try {
+        urlSchema.validateSync(url);
+      } catch (error) {
+        const { message } = error;
+        state.feedback = { message, isError: true };
+        state.feedForm.state = 'failed';
+      }
     }
   };
 

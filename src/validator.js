@@ -2,12 +2,12 @@ import { object, number, string } from 'yup';
 
 const validStatusCodes = [200];
 
-export const validateUrl = (url, urlsList) => {
+export const getUrlValidationSchema = (urlsList) => {
   const schema = string()
     .required()
     .url('feedback.errors.url.invalid')
     .notOneOf(urlsList, 'feedback.errors.rss.alreadyExists');
-  return schema.isValidSync(url);
+  return schema;
 };
 
 const rssContentShema = string()

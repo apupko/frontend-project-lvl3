@@ -3,13 +3,12 @@ import _ from 'lodash';
 import { validateResponse } from './validator.js';
 import RSSParser from './parser.js';
 
-axios.defaults.adapter = require('axios/lib/adapters/http');
+axios.defaults.baseURL = 'https://hexlet-allorigins.herokuapp.com';
 
-const proxyUrl = 'https://hexlet-allorigins.herokuapp.com/get?url=';
-const proxy = (url) => `${proxyUrl}${encodeURIComponent(url)}`;
+const requestPath = (url) => `/get?url=${encodeURIComponent(url)}`;
 
 export const loadRss = (url) => axios
-  .get(proxy(url));
+  .get(requestPath(url));
   // .catch(() => Promise.reject(new Error('feedback.errors.network')));
 
 const setLinkToFeed = ({ feed, posts }, link) => ({ feed: { ...feed, link }, posts });

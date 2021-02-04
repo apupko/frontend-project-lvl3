@@ -9,7 +9,7 @@ const renderFormToFilling = (view) => {
   const { url, submitBtn } = form.elements;
   removeInvalid(url);
   enableElement(submitBtn);
-  enableElement(url);
+  url.removeAttribute('readonly');
 };
 
 const renderFormToSending = (view) => {
@@ -17,7 +17,7 @@ const renderFormToSending = (view) => {
   const { url, submitBtn } = form.elements;
   removeInvalid(url);
   disableElement(submitBtn);
-  disableElement(url);
+  url.setAttribute('readonly', '');
 };
 
 const renderFormToFailed = (view) => {
@@ -25,7 +25,7 @@ const renderFormToFailed = (view) => {
   const { url, submitBtn } = form.elements;
   setInvalid(url);
   enableElement(submitBtn);
-  enableElement(url);
+  url.removeAttribute('readonly');
 };
 
 const renderFormToLoaded = (view) => {
@@ -34,7 +34,7 @@ const renderFormToLoaded = (view) => {
   removeInvalid(url);
   url.value = '';
   enableElement(submitBtn);
-  enableElement(url);
+  url.setAttribute('readonly', '');
 };
 
 const mappingFormStateToRender = {

@@ -1,52 +1,38 @@
-const removeInvalid = (element) => element.classList.remove('is-invalid');
-const setInvalid = (element) => element.classList.add('is-invalid');
-
-const enableElement = (element) => element.removeAttribute('disabled');
-const disableElement = (element) => element.setAttribute('disabled', '');
-
-const renderFormToFilling = (view) => {
-  const { form } = view;
-  const { url, submitBtn } = form.elements;
-  removeInvalid(url);
-  enableElement(submitBtn);
+const renderFormToFilling = ({ elements }) => {
+  const { url, submitBtn } = elements;
+  url.classList.remove('is-invalid');
+  submitBtn.removeAttribute('disabled');
   url.removeAttribute('readonly');
 };
 
-const renderFormToSending = (view) => {
-  const { form } = view;
-  const { url, submitBtn } = form.elements;
-  removeInvalid(url);
-  disableElement(submitBtn);
+const renderFormToSending = ({ elements }) => {
+  const { url, submitBtn } = elements;
+  url.classList.remove('is-invalid');
+  submitBtn.setAttribute('disabled', '');
   url.setAttribute('readonly', '');
 };
 
-const renderFormToFailed = (view) => {
-  const { form } = view;
-  const { url, submitBtn } = form.elements;
-  setInvalid(url);
-  enableElement(submitBtn);
+const renderFormToFailed = ({ elements }) => {
+  const { url, submitBtn } = elements;
+  url.classList.add('is-invalid');
+  submitBtn.removeAttribute('disabled');
   url.removeAttribute('readonly');
 };
 
-const renderFormToLoaded = (view) => {
-  const { form } = view;
-  const { url, submitBtn } = form.elements;
-  removeInvalid(url);
+const renderFormToFinished = ({ elements }) => {
+  const { url } = elements;
   url.value = '';
-  enableElement(submitBtn);
-  url.setAttribute('readonly', '');
 };
 
 const mappingFormStateToRender = {
   filling: renderFormToFilling,
   sending: renderFormToSending,
   failed: renderFormToFailed,
-  finished: renderFormToLoaded,
+  finished: renderFormToFinished,
 };
 
-export default (view) => ({ feedForm }) => {
-  const { state } = feedForm;
-  const render = mappingFormStateToRender[state];
+export default ({ form }) => ({ feedForm }) => {
+  const render = mappingFormStateToRender[feedForm.state];
   if (!render) throw Error('Unknown form state!!!');
-  render(view);
+  render(form);
 };

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import view from './view/view.js';
-import { getUrlValidationSchema } from './validator.js';
+import { validateUrlSync } from './validator.js';
 import { getFeed, getNewPostsFromFeeds } from './feeds.js';
 
 const UPDATE_TIME = 5000;
@@ -29,35 +29,32 @@ export default () => {
     event.preventDefault();
     const url = event.target.elements.url.value;
     const feedsUrls = state.feeds.map(({ link }) => link);
-    const urlSchema = getUrlValidationSchema(feedsUrls);
 
-    if (urlSchema.isValidSync(url)) {
-      state.feedForm.state = 'sending';
-      getFeed(url).then(({ feed, posts }) => {
-        state.feedForm.state = 'finished';
-        state.feeds = [...state.feeds, feed];
-        state.posts = [...posts, ...state.posts];
-        state.feedback = { message: 'feedback.rssLoaded', isError: false };
-        state.feedForm.state = 'filling';
-      })
-        .catch((error) => {
-          const { message } = error;
-          state.feedback = { message, isError: true };
-          state.feedForm.state = 'failed';
-        });
-    } else {
-      try {
-        urlSchema.validateSync(url);
-      } catch (error) {
+    try {
+      validateUrlSync(url, feedsUrls);
+    } catch (error) {
+      state.feedback = { message: error.message, isError: true };
+      state.feedForm.state = 'failed';
+      return;
+    }
+
+    state.feedForm.state = 'sending';
+
+    getFeed(url).then(({ feed, posts }) => {
+      state.feedForm.state = 'finished';
+      state.feedback = { message: 'feedback.rssLoaded', isError: false };
+      state.feeds = [...state.feeds, feed];
+      state.posts = [...posts, ...state.posts];
+      state.feedForm.state = 'filling';
+    })
+      .catch((error) => {
         const { message } = error;
         state.feedback = { message, isError: true };
-        state.feedForm.state = 'failed';
-      }
-    }
+        state.feedForm.state = 'filling';
+      });
   };
 
-  const modalShowHandler = (event) => {
-    const { target } = event;
+  const modalShowHandler = ({ target }) => {
     const { id } = target.dataset;
     if (!id) return;
     state.stateUI.modal.id = id;

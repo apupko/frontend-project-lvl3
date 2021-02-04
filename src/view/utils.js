@@ -1,5 +1,5 @@
-const createHeader = (text) => {
-  const header = document.createElement('h2');
+const createHeader = (text, type) => {
+  const header = document.createElement(type);
   header.textContent = text;
   return header;
 };
@@ -7,7 +7,6 @@ const createHeader = (text) => {
 const createItem = () => {
   const item = document.createElement('li');
   item.classList.add('list-group-item');
-
   return item;
 };
 

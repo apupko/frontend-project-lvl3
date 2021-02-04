@@ -19,6 +19,7 @@ const indexingPost = (post, feedId) => ({
   id: _.uniqueId(),
   read: false,
 });
+
 const indexingPosts = ({ feed, posts }) => (
   { feed, posts: posts.map((post) => indexingPost(post, feed.id)) });
 
@@ -42,14 +43,20 @@ const notContainIn = (posts) => (post) => _(posts).every(({ link }) => link !== 
 
 const getNewPostsFromFeed = ({ feed, posts: loadedPosts }) => getRawFeed(feed.link)
   .then((rss) => _(rss.posts).filter(notContainIn(loadedPosts)).value())
-  .then((newPosts) => _({ feed, posts: newPosts }).indexingPosts().getPosts().value());
+  .then((newPosts) => _({ feed, posts: newPosts })
+    .indexingPosts()
+    .getPosts()
+    .value());
 
 const extract = (allPosts, feed) => (
   { feed, posts: _(allPosts).filter((post) => post.feedId === feed.id).value() }
 );
 
 export const getFeed = (url) => getRawFeed(url)
-  .then((rss) => _(rss).indexingFeed().indexingPosts().value());
+  .then((rss) => _(rss)
+    .indexingFeed()
+    .indexingPosts()
+    .value());
 
 export const getNewPostsFromFeeds = ({ feeds, posts }) => Promise.all(
   _(feeds).flatMap((feed) => getNewPostsFromFeed(extract(posts, feed))).value(),

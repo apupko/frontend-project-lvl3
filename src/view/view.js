@@ -17,11 +17,13 @@ const watchingFunction = (state) => (path) => {
     feeds: renderFeeds(view),
     posts: renderPosts(view),
   };
+
   const route = path.includes('posts') ? 'posts' : path;
   const render = mappingPathToRender[route];
   if (!render) {
     throw new Error('Unknown render path!!!');
   }
+
   render(state);
 };
 

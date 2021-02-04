@@ -26,22 +26,21 @@ const createPostItem = (post) => {
   link.setAttribute('href', post.link);
   link.setAttribute('target', '_blank');
   link.setAttribute('rel', 'noopener noreferrer');
-  const style = post.read ? 'font-weight-normal' : 'font-weight-bold';
-  link.classList.add(style);
+  const readStyle = post.read ? 'font-weight-normal' : 'font-weight-bold';
+  link.classList.add(readStyle);
   link.dataset.id = post.id;
   link.textContent = post.title;
-  item.append(link);
-  item.append(button);
+  item.append(link, button);
   item.classList.add(...postClass);
   return item;
 };
 
-export default (view) => ({ posts }) => {
-  const { posts: postsDiv } = view;
-  postsDiv.innerHTML = '';
-  if (posts.length === 0) return;
-  const header = createHeader(i18next.t('posts.header'));
-  const items = posts.map(createPostItem);
+export default (view) => (state) => {
+  const { posts } = view;
+  posts.innerHTML = '';
+  if (state.posts.length === 0) return;
+  const header = createHeader(i18next.t('posts.header'), 'h2');
+  const items = state.posts.map(createPostItem);
   const list = createList(items);
-  postsDiv.append(header, list);
+  posts.append(header, list);
 };

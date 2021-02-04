@@ -2,12 +2,12 @@ import { object, number, string } from 'yup';
 
 const validStatusCodes = [200];
 
-export const validateUrl = (url, urlsList) => {
+export const validateUrlSync = (url, urlsList) => {
   const schema = string()
     .required()
     .url('feedback.errors.url.invalid')
     .notOneOf(urlsList, 'feedback.errors.rss.alreadyExists');
-  return schema.validate(url);
+  return schema.validateSync(url, urlsList);
 };
 
 const rssContentShema = string()
@@ -17,7 +17,6 @@ const rssContentShema = string()
 const rssStatusShema = object({
   http_code: number().equals(validStatusCodes, 'feedback.errors.rss.notFound'),
   content_type: string()
-    .required()
     .matches(/(rss\+xml|xml)/, { message: 'feedback.errors.rss.invalid' }),
 }).required();
 

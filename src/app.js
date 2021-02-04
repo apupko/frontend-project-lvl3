@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import View from './view/view.js';
-import { validateUrl } from './validator.js';
+import view from './view/view.js';
+import { validateUrlSync } from './validator.js';
 import { getFeed, getNewPostsFromFeeds } from './feeds.js';
 
 const UPDATE_TIME = 5000;
@@ -23,31 +23,38 @@ export default () => {
     posts: [],
   };
 
-  const view = new View();
   const state = view.init(initState);
-  state.feedback = { message: '', isError: false };
 
   const formSubmitHahdler = (event) => {
     event.preventDefault();
     const url = event.target.elements.url.value;
     const feedsUrls = state.feeds.map(({ link }) => link);
+
+    try {
+      validateUrlSync(url, feedsUrls);
+    } catch (error) {
+      state.feedback = { message: error.message, isError: true };
+      state.feedForm.state = 'failed';
+      return;
+    }
+
     state.feedForm.state = 'sending';
-    validateUrl(url, feedsUrls).then(getFeed).then(({ feed, posts }) => {
+
+    getFeed(url).then(({ feed, posts }) => {
       state.feedForm.state = 'finished';
+      state.feedback = { message: 'feedback.rssLoaded', isError: false };
       state.feeds = [...state.feeds, feed];
       state.posts = [...posts, ...state.posts];
-      state.feedback = { message: 'feedback.rssLoaded', isError: false };
       state.feedForm.state = 'filling';
     })
       .catch((error) => {
         const { message } = error;
-        state.feedForm.state = 'failed';
         state.feedback = { message, isError: true };
+        state.feedForm.state = 'filling';
       });
   };
 
-  const modalShowHandler = (event) => {
-    const { target } = event;
+  const modalShowHandler = ({ target }) => {
     const { id } = target.dataset;
     if (!id) return;
     state.stateUI.modal.id = id;
@@ -55,7 +62,7 @@ export default () => {
     state.posts[index].read = true;
   };
 
-  const { form, posts } = view;
+  const { form, posts } = view.elements;
   form.addEventListener('submit', formSubmitHahdler);
   posts.addEventListener('click', modalShowHandler);
 

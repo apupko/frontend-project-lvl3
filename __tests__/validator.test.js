@@ -10,7 +10,6 @@ nock.disableNetConnect();
 
 const host = 'http://hexlet.ru';
 const validUrl = '/valid.rss';
-// const wrongUrl = ':-wrongurl.com';
 const responses = {};
 
 beforeAll(() => {

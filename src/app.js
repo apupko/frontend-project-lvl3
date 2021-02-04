@@ -30,19 +30,24 @@ export default () => {
     event.preventDefault();
     const url = event.target.elements.url.value;
     const feedsUrls = state.feeds.map(({ link }) => link);
-    state.feedForm.state = 'sending';
-    validateUrl(url, feedsUrls).then(getFeed).then(({ feed, posts }) => {
-      state.feedForm.state = 'finished';
-      state.feeds = [...state.feeds, feed];
-      state.posts = [...posts, ...state.posts];
-      state.feedback = { message: 'feedback.rssLoaded', isError: false };
-      state.feedForm.state = 'filling';
-    })
-      .catch((error) => {
-        const { message } = error;
-        state.feedback = { message, isError: true };
-        state.feedForm.state = 'failed';
-      });
+    if (validateUrl(url, feedsUrls)) {
+      state.feedForm.state = 'sending';
+      getFeed(url).then(({ feed, posts }) => {
+        state.feedForm.state = 'finished';
+        state.feeds = [...state.feeds, feed];
+        state.posts = [...posts, ...state.posts];
+        state.feedback = { message: 'feedback.rssLoaded', isError: false };
+        state.feedForm.state = 'filling';
+      })
+        .catch((error) => {
+          const { message } = error;
+          state.feedback = { message, isError: true };
+          state.feedForm.state = 'failed';
+        });
+    } else {
+      state.feedback = { message: 'feedback.errors.url.invalid', isError: true };
+      state.feedForm.state = 'failed';
+    }
   };
 
   const modalShowHandler = (event) => {

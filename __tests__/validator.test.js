@@ -2,7 +2,7 @@ import nock from 'nock';
 import path from 'path';
 import axios from 'axios';
 import fs from 'fs';
-import { validateUrl, validateResponse } from '../src/validator.js';
+import { validateResponse } from '../src/validator.js';
 
 axios.defaults.adapter = require('axios/lib/adapters/http');
 
@@ -10,7 +10,7 @@ nock.disableNetConnect();
 
 const host = 'http://hexlet.ru';
 const validUrl = '/valid.rss';
-const wrongUrl = ':-wrongurl.com';
+// const wrongUrl = ':-wrongurl.com';
 const responses = {};
 
 beforeAll(() => {
@@ -19,16 +19,6 @@ beforeAll(() => {
   responses.valid = JSON.parse(fs.readFileSync(pathToValidRss, 'utf-8'));
   responses.invalid = JSON.parse(fs.readFileSync(pathToInvalidRss, 'utf-8'));
 });
-
-const urls = [
-  ['valid url', `${host}${validUrl}`, [], `${host}${validUrl}`],
-  ['invalid url', `${wrongUrl}`, [], 'feedback.errors.url.invalid'],
-  ['url in feeds list', `${host}${validUrl}`, [`${host}${validUrl}`], 'feedback.errors.rss.alreadyExists'],
-];
-
-test.each(urls)('case %#: %s', (caseName, url, list, expected) => validateUrl(url, list)
-  .then((result) => expect(result).toBe(expected))
-  .catch((err) => expect(err.errors).toContain(expected)));
 
 test('valid response', () => {
   nock(host)

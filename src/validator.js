@@ -7,7 +7,7 @@ export const validateUrl = (url, urlsList) => {
     .required()
     .url('feedback.errors.url.invalid')
     .notOneOf(urlsList, 'feedback.errors.rss.alreadyExists');
-  return schema.validate(url);
+  return schema.isValidSync(url);
 };
 
 const rssContentShema = string()

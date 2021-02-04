@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import { createHeader, createItem, createList } from './utils.js';
+import { createItem, createList } from './utils.js';
 
 const postClass = [
   'list-group-item',
@@ -35,12 +35,9 @@ const createPostItem = (post) => {
   return item;
 };
 
-export default (view) => (state) => {
-  const { posts } = view;
-  posts.innerHTML = '';
-  if (state.posts.length === 0) return;
-  const header = createHeader(i18next.t('posts.header'), 'h2');
-  const items = state.posts.map(createPostItem);
-  const list = createList(items);
-  posts.append(header, list);
-};
+export default (view) => (state) => createList(
+  view.posts,
+  state.posts,
+  createPostItem,
+  i18next.t('posts.header'),
+);

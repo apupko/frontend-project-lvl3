@@ -10,12 +10,25 @@ const createItem = () => {
   return item;
 };
 
-const createList = (items) => {
+const createUl = (items) => {
   const list = document.createElement('ul');
   list.classList.add('list-group', 'mb-5');
   items.forEach((item) => list.append(item));
-
   return list;
+};
+
+const clear = (element) => {
+  const tmp = element;
+  tmp.innerHTML = '';
+};
+
+const createList = (parent, content, render, title) => {
+  if (content.length === 0) return;
+  clear(parent);
+  const header = createHeader(title, 'h2');
+  const items = content.map(render);
+  const list = createUl(items);
+  parent.append(header, list);
 };
 
 export {

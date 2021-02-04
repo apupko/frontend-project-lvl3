@@ -10,13 +10,9 @@ const createFeedItem = (feed) => {
   return item;
 };
 
-export default (view) => (state) => {
-  const { feeds } = view;
-  feeds.innerHTML = '';
-  if (state.feeds.length === 0) return;
-
-  const header = createHeader(i18next.t('feeds.header'), 'h2');
-  const items = state.feeds.map(createFeedItem);
-  const list = createList(items);
-  feeds.append(header, list);
-};
+export default (view) => (state) => createList(
+  view.feeds,
+  state.feeds,
+  createFeedItem,
+  i18next.t('feeds.header'),
+);

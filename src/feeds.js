@@ -5,7 +5,7 @@ import RSSParser from './parser.js';
 
 axios.defaults.baseURL = 'https://hexlet-allorigins.herokuapp.com';
 
-const requestPath = (url) => `/get?url=${encodeURIComponent(url)}`;
+const requestPath = (url) => `/get?url=${url}`;
 
 export const loadRss = (url) => axios
   .get(requestPath(url));

@@ -41,8 +41,8 @@ export default () => {
     })
       .catch((error) => {
         const { message } = error;
-        state.feedForm.state = 'failed';
         state.feedback = { message, isError: true };
+        state.feedForm.state = 'failed';
       });
   };
 

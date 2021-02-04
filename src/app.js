@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import View from './view/view.js';
+import view from './view/view.js';
 import { getUrlValidationSchema } from './validator.js';
 import { getFeed, getNewPostsFromFeeds } from './feeds.js';
 
@@ -23,7 +23,6 @@ export default () => {
     posts: [],
   };
 
-  const view = new View();
   const state = view.init(initState);
 
   const formSubmitHahdler = (event) => {
@@ -66,7 +65,7 @@ export default () => {
     state.posts[index].read = true;
   };
 
-  const { form, posts } = view;
+  const { form, posts } = view.elements;
   form.addEventListener('submit', formSubmitHahdler);
   posts.addEventListener('click', modalShowHandler);
 

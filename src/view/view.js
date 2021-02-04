@@ -7,7 +7,9 @@ import renderPosts from './posts';
 import renderFeedback from './feedback';
 import renderModal from './modal';
 
-const watchingFunction = (view) => function func(path) {
+const view = {};
+
+const watchingFunction = (state) => (path) => {
   const mappingPathToRender = {
     'feedForm.state': renderForm(view),
     'stateUI.modal.id': renderModal(view),
@@ -20,7 +22,7 @@ const watchingFunction = (view) => function func(path) {
   if (!render) {
     throw new Error('Unknown render path!!!');
   }
-  render(this);
+  render(state);
 };
 
 const initStaticContents = () => {
@@ -39,16 +41,16 @@ const initStaticContents = () => {
   modalCloseBtn.textContent = i18next.t('posts.preview.modal.closeName');
 };
 
-function init(state) {
-  this.modal = document.body.querySelector('#previewModal');
-  this.modalTitle = this.modal.querySelector('.modal-title');
-  this.modalBody = this.modal.querySelector('.modal-body');
-  this.modalViewBtn = this.modal.querySelector('.full-article');
+const init = (state) => {
+  view.modal = document.body.querySelector('#previewModal');
+  view.modalTitle = view.modal.querySelector('.modal-title');
+  view.modalBody = view.modal.querySelector('.modal-body');
+  view.modalViewBtn = view.modal.querySelector('.full-article');
 
-  this.form = document.body.querySelector('.rss-form');
-  this.feedback = document.body.querySelector('.feedback');
-  this.feeds = document.body.querySelector('.feeds');
-  this.posts = document.body.querySelector('.posts');
+  view.form = document.body.querySelector('.rss-form');
+  view.feedback = document.body.querySelector('.feedback');
+  view.feeds = document.body.querySelector('.feeds');
+  view.posts = document.body.querySelector('.posts');
 
   i18next.init({
     lng: 'en',
@@ -60,11 +62,7 @@ function init(state) {
     .then(() => initStaticContents())
     .catch((err) => console.log(err));
 
-  return onChange(state, watchingFunction(this));
-}
+  return onChange(state, watchingFunction(state));
+};
 
-function View() {
-  this.init = init;
-}
-
-export default View;
+export default { elements: view, init };

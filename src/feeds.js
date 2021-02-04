@@ -9,7 +9,7 @@ const requestPath = (url) => `/get?disableCache=true&url=${url}`;
 
 export const loadRss = (url) => axios
   .get(requestPath(url));
-  // .catch(() => Promise.reject(new Error('feedback.errors.network')));
+  .catch(() => Promise.reject(new Error('feedback.errors.network')));
 
 const setLinkToFeed = ({ feed, posts }, link) => ({ feed: { ...feed, link }, posts });
 const indexingFeed = ({ feed, posts }) => ({ feed: { ...feed, id: _.uniqueId() }, posts });

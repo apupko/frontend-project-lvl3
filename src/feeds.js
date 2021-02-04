@@ -8,7 +8,7 @@ axios.defaults.baseURL = 'https://hexlet-allorigins.herokuapp.com';
 const requestPath = (url) => `/get?disableCache=true&url=${url}`;
 
 export const loadRss = (url) => axios
-  .get(requestPath(url));
+  .get(requestPath(url))
   .catch(() => Promise.reject(new Error('feedback.errors.network')));
 
 const setLinkToFeed = ({ feed, posts }, link) => ({ feed: { ...feed, link }, posts });
